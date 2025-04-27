@@ -3,9 +3,17 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect("mongodb://127.0.0.1:27017/quizz");
     mongoose.set("strictQuery", true);
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+
+    await mongoose.connect("mongodb://127.0.0.1:27017/quizz", {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    mongoose.connection.once("open", () => {
+      console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
+    });
+
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
     process.exit(1); // Exit process with failure
@@ -13,10 +21,13 @@ const connectDB = async () => {
 };
 
 // Graceful shutdown
-process.on("SIGINT", async () => {
+const gracefulShutdown = async () => {
   await mongoose.connection.close();
   console.log("🛑 MongoDB connection closed due to app termination");
   process.exit(0);
-});
+};
+
+process.on("SIGINT", gracefulShutdown);
+process.on("SIGTERM", gracefulShutdown);
 
 module.exports = connectDB;
