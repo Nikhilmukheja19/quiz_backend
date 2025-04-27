@@ -7,7 +7,7 @@ const connectDB = require("./config/dbConfig");
 app.use(
   cors({
     origin: [
-      "http://localhost:3000" /* 'https://your-frontend-on-vercel.com'*/,
+      'https://quiz-frontend-gqqt04obq-nikhils-projects-60bba1d1.vercel.app',
     ],
   })
 );
